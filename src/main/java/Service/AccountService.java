@@ -17,10 +17,14 @@ public class AccountService {
 
     // method that returns the new account that was created
     public Account createAccount(Account account) {
-        if (account.getUsername() != null && account.getPassword().length() >= 4) {
+        if (!(account.getUsername().isEmpty()) && account.getPassword().length() >= 4) {
             return accountDAO.createAccount(account);
         }
         return null;
+    }
+
+    public Account verifyLoginAccount(String username, String password) {
+        return accountDAO.verifyLoginAccount(username, password);
     }
 
 

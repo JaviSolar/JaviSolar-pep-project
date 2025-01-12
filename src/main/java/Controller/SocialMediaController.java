@@ -1,5 +1,6 @@
 package Controller;
 
+import Service.AccountService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,8 +14,12 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
-    // AccountService accountService;
+    AccountService accountService;
     // MessageService messageService;
+
+    public SocialMediaController() {
+        this.accountService = new AccountService();
+    }
 
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -24,8 +29,8 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         // app.get("example-endpoint", this::exampleHandler);
-        app.post("/account", this::postAccountHandler);
-
+        app.post("/register", this::createAccountHandler);
+        app.post("/login", this::verifyAccountHandler);
 
         return app;
     }
@@ -38,10 +43,11 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
-    private void postAccountHandler(Context ctx) throws JsonProcessingException {
+    // Handler for the registration of the account
+    private void createAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
-        Account addedAccount = accountService.addAccount(account);
+        Account addedAccount = accountService.createAccount(account);
         if(addedAccount!=null){
             ctx.json(mapper.writeValueAsString(addedAccount));
             ctx.status(200);
@@ -50,4 +56,18 @@ public class SocialMediaController {
         }
     }
 
+    // Handler for the login verification of the account
+    private void verifyAccountHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account verifyAccount = accountService.verifyLoginAccount(account.getUsername(), account.getPassword());
+        if(verifyAccount!=null){
+            ctx.json(mapper.writeValueAsString(verifyAccount));
+            ctx.status(200);
+        }else{
+            ctx.status(401);
+        }
+    }
+
+    // TO-DO: HANDLER FOR THE MESSAGES...
 }

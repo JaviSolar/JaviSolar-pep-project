@@ -15,7 +15,7 @@ public class AccountDAO {
         Connection connection = ConnectionUtil.getConnection();
         List<Account> accounts = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM Account;";
+            String sql = "SELECT * FROM account;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
@@ -28,28 +28,11 @@ public class AccountDAO {
         return accounts;
     }
 
-    public Account getAccountById(int account_id) {
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            String sql = "SELECT * FROM Account WHERE account_id = ?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, account_id);
-            ResultSet rs = preparedStatement.executeQuery(sql);
-            while (rs.next()) {
-                Account account = new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
-                return account;
-            } 
-        } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            return null;
-    }
-
     // FUNCTION COMPLETED: REGISTERING AM ACCOUNT
     public Account createAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
         try {
-            String sql = "INSERT INTO Account(username, password) VALUES(?, ?);";
+            String sql = "INSERT INTO account(username, password) VALUES(?, ?);";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, account.getUsername());
             preparedStatement.setString(2, account.getPassword());
@@ -66,14 +49,32 @@ public class AccountDAO {
             return null;
     }
 
-    public void updateAccount(int id, Account account) {
+    // FUNCTION COMPLETED: VERIFYING LOGIN
+    public Account verifyLoginAccount(String username, String password) {
         Connection connection = ConnectionUtil.getConnection();
         try {
-            String sql = "UPDATE Account SET username = ?, password = ? WHERE account_id = ?;";
+            String sql = "SELECT * FROM account WHERE username = ? AND password = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-        }
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+            } 
+        } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            return null;
     }
+
+    // public void updateAccount(int id, Account account) {
+    //     Connection connection = ConnectionUtil.getConnection();
+    //     try {
+    //         String sql = "UPDATE Account SET username = ?, password = ? WHERE account_id = ?;";
+    //         PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+    //     }
+    // }
 
 
 
