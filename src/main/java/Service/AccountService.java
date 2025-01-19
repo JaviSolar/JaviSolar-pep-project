@@ -23,9 +23,9 @@ public class AccountService {
         return null;
     }
 
+    // method that returns the verified account
     public Account verifyLoginAccount(String username, String password) {
         return accountDAO.verifyLoginAccount(username, password);
     }
-
 
 }

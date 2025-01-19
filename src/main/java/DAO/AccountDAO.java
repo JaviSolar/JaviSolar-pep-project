@@ -28,7 +28,7 @@ public class AccountDAO {
         return accounts;
     }
 
-    // FUNCTION COMPLETED: REGISTERING AM ACCOUNT
+    // FUNCTION COMPLETED: REGISTERING AN ACCOUNT
     public Account createAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -66,16 +66,5 @@ public class AccountDAO {
             }
             return null;
     }
-
-    // public void updateAccount(int id, Account account) {
-    //     Connection connection = ConnectionUtil.getConnection();
-    //     try {
-    //         String sql = "UPDATE Account SET username = ?, password = ? WHERE account_id = ?;";
-    //         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-    //     }
-    // }
-
-
 
 }
