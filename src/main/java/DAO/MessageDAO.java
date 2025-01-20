@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.*;
 
 public class MessageDAO {
-    // FUNCTION: CREATING A MESSAGE
+    // FUNCTION COMPLETED: CREATING A MESSAGE
     public Message createMessage(Message message) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -30,6 +30,47 @@ public class MessageDAO {
         } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+        
             return null;
+    }
+
+    // FUNCTION COMPLETED: RETRIEVE ALL MESSAGES
+    public List<Message> getAllMessages() {
+        Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM message;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return messages;
+    }
+
+    // FUNCTION COMPLETED: RETRIEVE A MESSAGE BASED ON ITS ID
+    public Message getMessageByID(int id){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            //Write SQL logic here
+            String sql = "SELECT * FROM message WHERE message.message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            //write preparedStatement's setInt method here.
+            preparedStatement.setInt(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()){
+                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                return message;
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

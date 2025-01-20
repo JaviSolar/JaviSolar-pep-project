@@ -21,6 +21,7 @@ public class SocialMediaController {
 
     public SocialMediaController() {
         this.accountService = new AccountService();
+        this.messageService = new MessageService();
     }
 
     /**
@@ -34,6 +35,8 @@ public class SocialMediaController {
         app.post("/register", this::createAccountHandler);
         app.post("/login", this::verifyAccountHandler);
         app.post("/messages", this::createMessageHandler);
+        app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageByIDHandler);
 
         return app;
     }
@@ -73,6 +76,8 @@ public class SocialMediaController {
     }
 
     // TO-DO: HANDLER FOR THE MESSAGES...
+
+    // Handler for the creation of a new message
     private void createMessageHandler (Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
@@ -83,5 +88,23 @@ public class SocialMediaController {
         } else {
             ctx.status(400);
         }
+    }
+
+    // Handler for retrieving all messages
+    private void getAllMessagesHandler (Context ctx) {
+        ctx.json(messageService.getAllMessages());
+        ctx.status(200);
+    }
+
+    // Handler for retrieving a message based on its id
+    private void getMessageByIDHandler (Context ctx) {
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message messageExist = messageService.getMessageByID(message_id);
+        if (messageExist != null) {
+            ctx.json(messageExist);
+        } else {
+            ctx.result("");
+        }
+        ctx.status(200);
     }
 }
