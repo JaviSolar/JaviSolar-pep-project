@@ -76,25 +76,32 @@ public class MessageDAO {
     // FUNCTION COMPLETED: DELETING A MESSAGE BASED ON ITS ID
     public Message deleteMessageByID(int id){
         Connection connection = ConnectionUtil.getConnection();
+        Message message = null;
         try {
             //Write SQL logic here
-            String sql = "DELETE * FROM message WHERE message.message_id = ?;";
+            String sql = "SELECT * FROM message WHERE message.message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setInt(1, id);
 
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()){
-                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
-                return message;
+                message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
             }
+            
+            String deleteSql = "DELETE FROM message WHERE message.message_id = ?;";
+            PreparedStatement deletePS = connection.prepareStatement(deleteSql);
+            deletePS.setInt(1, id);
+            
+            deletePS.executeUpdate();
+
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        return null;
+        return message;
     }
 
-    // FUNCTION COMPLETE: UPDATING THE TEXT OF A MESSSAGE BASED ON ITS ID
+    // FUNCTION COMPLETED: UPDATING THE TEXT OF A MESSSAGE BASED ON ITS ID
     public void updateMessageByID(int id, Message message){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -109,6 +116,26 @@ public class MessageDAO {
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
+    }
 
+    // FUNCTION COMPLETED: RETRIEVING ALL MESSAGES BY A USER
+    public List<Message> getAllMessagesFromAUser(int id) {
+        Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM message INNER JOIN account ON message.posted_by = account.account_id WHERE account.account_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+    
+            preparedStatement.setInt(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                messages.add(message);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return messages;
     }
 }

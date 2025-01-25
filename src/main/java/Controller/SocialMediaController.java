@@ -2,6 +2,9 @@ package Controller;
 
 import Service.AccountService;
 import Service.MessageService;
+
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,7 +42,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageByIDHandler);
         app.delete("/messages/{message_id}", this::deleteMessageByIDHandler);
         app.patch("messages/{message_id}", this::updateMessageByIDHandler);
-
+        app.get("accounts/{account_id}/messages", this::getAllMessagesFromAUserHandler);
         return app;
     }
 
@@ -135,4 +138,15 @@ public class SocialMediaController {
         }
     }
 
+    // Handler for retrieving a list of messages by a particular user
+    private void getAllMessagesFromAUserHandler(Context ctx) {
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+        List<Message> messageExist = messageService.getAllMessagesFromAUser(account_id);
+        if (messageExist != null) {
+            ctx.json(messageExist);
+        } else {
+            ctx.result("");
+        }
+        ctx.status(200);
+    }
 }

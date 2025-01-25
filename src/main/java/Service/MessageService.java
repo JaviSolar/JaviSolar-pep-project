@@ -48,4 +48,9 @@ public class MessageService {
         }
         return null;
     }
+
+    // method that retrieves all the message's by a user
+    public List<Message> getAllMessagesFromAUser(int id) {
+        return messageDAO.getAllMessagesFromAUser(id);
+    }
 }
